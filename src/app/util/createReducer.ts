@@ -1,5 +1,5 @@
-import produce from 'immer';
-import { Action, Reducer } from 'redux';
+import produce from "immer";
+import { Action, Reducer } from "redux";
 
 export default function createReducer(intialState: any, handlers: any) {
   return (state = intialState, action: { type: string }) => {
@@ -12,20 +12,27 @@ export default function createReducer(intialState: any, handlers: any) {
   };
 }
 
-type SubType<Base, Condition> = Pick<Base, {
-  [Key in keyof Base]: Base[Key] extends Condition ? Key : never
-}[keyof Base]>;
+type SubType<Base, Condition> = Pick<
+  Base,
+  { [Key in keyof Base]: Base[Key] extends Condition ? Key : never }[keyof Base]
+>;
 
-type GetArgumentType<original extends Function> =
-  original extends (...x: infer argumentsType) => any ? argumentsType : never
-type QuickActionCreator<T extends Function, A> = (...args: GetArgumentType<T>) => Action<A>
+type GetArgumentType<original extends Function> = original extends (
+  ...x: infer argumentsType
+) => any
+  ? argumentsType
+  : never;
+type QuickActionCreator<T extends Function, A> = (
+  ...args: GetArgumentType<T>
+) => Action<A>;
 type ActionGroup<T> = {
-  [K in keyof SubType<T, (...args: any) => void>]:
-  T[K] extends Function ? QuickActionCreator<T[K], any> : never
+  [K in keyof SubType<T, (...args: any) => void>]: T[K] extends Function
+    ? QuickActionCreator<T[K], any>
+    : never
 };
 
 export class Hen<T> {
-  state: T
+  state: T;
 
   constructor(initialState: T) {
     this.state = initialState;
@@ -41,16 +48,19 @@ export function hen<T extends Hen<any>>(cls: T): [Reducer, ActionGroup<T>] {
     if (cls.hasOwnProperty(key)) {
       const actionType = `${actionPrefix}.${key}`;
       const p = cls[key];
-      if (typeof p === 'function') {
-        reducers[actionType] = (state: T, action: { type: string, payload: any }) => {
+      if (typeof p === "function") {
+        reducers[actionType] = (
+          state: T,
+          action: { type: string; payload: any }
+        ) => {
           p.call({ ...cls, state }, ...action.payload);
           return state;
         };
 
-        actions[key as any] = function () {
+        actions[key as any] = function() {
           const act = {
             type: actionType,
-            payload: Array.from(arguments),
+            payload: Array.from(arguments)
           };
           return act;
         };

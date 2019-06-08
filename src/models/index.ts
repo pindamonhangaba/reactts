@@ -1,3 +1,3 @@
-import * as pg from './pg';
+import * as pg from "./pg";
 
 export const Postgresql = pg;

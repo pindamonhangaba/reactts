@@ -1,6 +1,4 @@
-
-
 export interface RootState {
-    menu: any
+  menu: any;
+  pgeditor: any;
 }
-
