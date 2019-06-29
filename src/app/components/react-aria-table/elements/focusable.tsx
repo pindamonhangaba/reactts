@@ -10,19 +10,24 @@ export declare namespace Focusable {
 
 class Focusable extends React.Component<Focusable.Props> {
     ref = React.createRef()
+    getName() {
+        return this.props.index + '--' + this.props.colKey;
+    }
 
     componentDidMount() {
         this.shouldFocus();
     }
 
-    componentDidUpdate() {
-        this.shouldFocus();
+    focus(e?: any) {
+        if (this.ref.current) {
+            (this.ref.current as any).focus();
+        }
     }
 
     shouldFocus() {
         const { focused } = this.props;
-        if (this.ref.current && focused) {
-            (this.ref.current as any).focus();
+        if (focused) {
+            this.focus();
         }
     }
 

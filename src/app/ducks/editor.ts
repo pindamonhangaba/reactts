@@ -23,9 +23,15 @@ interface MyRedux {
 const initialState: MyRedux = {};
 
 class MyAction extends Hen<MyRedux> {
-  sayHi = (say: string) => {
+  sayHi(say: string) {
     this.state.phrase = say;
   };
+
+  async fetchGreetings() {
+    return (dispatch) => {
+      return this.sayHi('okok');
+    };
+  }
 }
 
 //export const menuReducer = createReducer(initialState, {});
@@ -33,6 +39,9 @@ class MyAction extends Hen<MyRedux> {
 // Selectors
 //const mainSelector: any = (state: RootState) => state.menu;
 
+
 export const [menuReducer, actions] = hen(new MyAction(initialState));
+
+actions.sayHi('23')
 
 export default menuReducer;

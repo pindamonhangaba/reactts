@@ -50,8 +50,9 @@
     margin-bottom: 0;
 }
 
-
-/**:focus,*/
+*:focus {
+    border: 1px dotted red;
+}
 
 .active {
     /* border: 1px dotted blue; */

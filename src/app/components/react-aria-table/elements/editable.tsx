@@ -83,10 +83,10 @@ class Editable extends React.Component<Editable.Props> {
 
     render() {
         const { colKey, row } = this.props as any;
-        const { value } = this.state as any;
+        const { value, editing } = this.state as any;
         let contents = row[colKey];
 
-        if (this.state.editing) {
+        if (editing) {
             contents = <input ref={this.inputRef as any} style={{ width: '100%' }} onBlur={this.handleBlur} value={value} onChange={this.handleChange} />
         }
 

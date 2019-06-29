@@ -48,7 +48,8 @@ const Row: React.RefForwardingComponent<
             getNode: () => elementRef.current,
         }))
         return (
-            <tr ref={elementRef} style={{ ...style, opacity }}>
+            <tr style={{ ...style, opacity }}>
+                <td ref={elementRef} ></td>
                 {children}
             </tr>
         )

@@ -1,6 +1,8 @@
 import React from 'react';
 import Focusable from './elements/Focusable';
 
+const DefaultRowRenderer = (p: any) => <tr {...p} />;
+
 declare namespace AriaTable {
     export interface Props {
         id: string
@@ -11,6 +13,7 @@ declare namespace AriaTable {
         onFocusChange?: (prev: Coord, curr: Coord, col: string) => void
         onOutOfBounds?: (c: Coord) => void
         rowRenderer?: any
+        keepFocus?: boolean
     }
     export type Coord = [number, number];
     export interface State {
@@ -28,21 +31,46 @@ declare namespace AriaTable {
 
 class AriaTable extends React.Component<AriaTable.Props, AriaTable.State> {
     state = { focused: [0, 0] as AriaTable.Coord }
+    ref = React.createRef()
+    cellRefs: Array<any> = [];
 
     setFocused(coord: AriaTable.Coord) {
-        this.setState({ focused: coord });
+        this.focusCoord(this.state.focused, coord);
     }
 
     handleChangeAccept = (coord: [number, string], val: any) => {
         this.props.onChange && this.props.onChange({ row: coord[0], col: coord[1], val });
     };
     handleCellClick = (coord: AriaTable.Coord, e: React.MouseEvent<HTMLElement>) => {
-        const { columns, onFocusChange } = this.props;
-        this.setState({ focused: coord }, () => onFocusChange && onFocusChange(coord, coord, columns[coord[1]].key));
+        this.focusCoord([-1, -1], coord);
+    };
+    handleBlur = (coord: AriaTable.Coord, e: React.MouseEvent<HTMLElement>) => {
+        const { keepFocus } = this.props;
+        if (keepFocus) {
+            return;
+        }
+        setTimeout(() => {
+            if (this.ref.current && !(this.ref.current as any).contains(document.activeElement)) {
+                this.focusCoord([-1, -1], coord);
+            }
+        }, 100);
     };
 
+    focusCoord(prev: AriaTable.Coord, cur: AriaTable.Coord) {
+        const { columns, onFocusChange } = this.props;
+        this.setState({ focused: cur }, () => {
+            const cur = this.state.focused;
+            const cellRef = this.cellRefs[(cur[1] * (columns || []).length) + cur[0]];
+            if (cellRef && cellRef.focus) {
+                cellRef.focus(cur);
+            }
+
+            onFocusChange && onFocusChange(prev, cur, columns[cur[0]].key);
+        });
+    }
+
     handleMouseDown = (coord: AriaTable.Coord, e: React.KeyboardEvent<HTMLElement>) => {
-        const { columns, data, onFocusChange, onOutOfBounds } = this.props;
+        const { columns, data, onOutOfBounds } = this.props;
         let [x, y] = coord;
         switch (e.keyCode) {
             case 37: // left
@@ -65,15 +93,16 @@ class AriaTable extends React.Component<AriaTable.Props, AriaTable.State> {
             return;
         }
 
-        this.setState({ focused: [x, y] }, () => onFocusChange && onFocusChange(coord, [x, y], columns[y].key));
+        this.focusCoord(coord, [x, y]);
     };
 
     render() {
         const { id, title, columns, data, rowRenderer } = this.props;
         const { focused } = this.state;
-        const Row = rowRenderer || React.createElement('td');
+        const Row = rowRenderer || DefaultRowRenderer;
+
         return (
-            <table role="grid" aria-labelledBy={id}>
+            <table role="grid" aria-labelledBy={id} ref={this.ref as any}>
                 <caption id={id}>{title}</caption>
                 <thead>
                     <tr>
@@ -94,6 +123,7 @@ class AriaTable extends React.Component<AriaTable.Props, AriaTable.State> {
                                             component={col.renderer || 'td'}
                                             onClick={this.handleCellClick.bind(this, [j, i])}
                                             onKeyDown={this.handleMouseDown.bind(this, [j, i])}
+                                            onBlur={this.handleBlur.bind(this, [j, i])}
                                             onChangeAccept={this.handleChangeAccept.bind(this, [i, col.key])}
                                             colKey={col.key}
                                             index={i}
@@ -101,6 +131,9 @@ class AriaTable extends React.Component<AriaTable.Props, AriaTable.State> {
                                             focused={focused[0] === j && focused[1] === i}
                                             style={{ ...col.style, width: col.width || 200 }}
                                             className={focused[0] === j && focused[1] === i && "active"}
+                                            ref={r => {
+                                                this.cellRefs[(i * (columns || []).length) + j] = r;
+                                            }}
                                         >
                                             {row[col.key]}
                                         </Focusable>))

@@ -6,16 +6,13 @@ import Modal from 'app/components/modal';
 import Tabs from 'app/components/tabs';
 import Sheet from 'app/components/sheet';
 
+import CreatableSelect from 'react-select/lib/Creatable';
+
 import Table from 'app/components/react-aria-table';
 import { Models } from 'app/components/tables';
-import DraggableRow from 'app/components/tables/draggable';
 
-
-import { DragDropContextProvider } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
-
-class Tabledata extends React.Component<{}> {
-    state: any = { data: [{}, {}, {}], currentFocus: [0, 0] };
+class Tabledata extends React.Component<{ defaults: { [k: string]: Array<{ value: string, label: string }> } } | any> {
+    state: any = { data: [{}], currentFocus: [0, 0], metadata: [] };
     ref = React.createRef();
 
     handleAddRow = (coord: Table.Coord) => {
@@ -33,50 +30,143 @@ class Tabledata extends React.Component<{}> {
     };
     handleClickAddRow = () => {
         const { data } = this.state;
+        if (Object.entries(data[data.length - 1]).length == 0) {
+            return;
+        }
         this.setState({ data: [...data, {}] });
     };
     handleClickRemoveRow = () => {
         let { data, currentFocus } = this.state;
+        if (data.length <= 1) {
+            return;
+        }
         data.splice(currentFocus[1], 1);
-        this.setState({ data: [...data] });
+        if (currentFocus[1] > data.length - 1) {
+            currentFocus[1] = data.length - 1;
+        }
+        this.setState({ data: [...data], currentFocus }, () => {
+            if (this.ref.current) {
+                (this.ref.current as any).setFocused(currentFocus);
+            }
+        });
+    };
+    handleMoveUp = () => {
+        let { data, currentFocus } = this.state;
+        if (currentFocus[1] <= 0) {
+            return;
+        }
+        const row = data[currentFocus[1]];
+        let d = [...data];
+        d.splice(currentFocus[1], 1);
+        d.splice(--currentFocus[1], 0, row);
+        this.setState({ data: d, currentFocus }, () => {
+            if (this.ref.current) {
+                (this.ref.current as any).setFocused(currentFocus);
+            }
+        });
+
+    };
+    handleMoveDown = () => {
+        let { data, currentFocus } = this.state;
+        if (currentFocus[1] >= data.length - 1) {
+            return;
+        }
+        const row = data[currentFocus[1]];
+        let d = [...data];
+        d.splice(currentFocus[1], 1);
+        d.splice(++currentFocus[1], 0, row);
+        this.setState({ data: d, currentFocus }, () => {
+            if (this.ref.current) {
+                (this.ref.current as any).setFocused(currentFocus);
+            }
+        });
+    };
+    handleChange = (v) => {
+        const data = [...this.state.data];
+        let val = v.val;
+        const cur = data[v.row].pk || 0;
+        if (v.col === 'pk') {
+            let count = 0;
+            data.map((e) => {
+                let pk = e.pk || 0;
+                count += pk ? 1 : 0;
+                if (pk > cur && cur) {
+                    if (!val) {
+                        pk -= 1;
+                    } else {
+                        pk += 1;
+                    }
+                }
+                e.pk = pk || '';
+                return e;
+            });
+            val = val ? count + 1 : '';
+        }
+        data[v.row][v.col] = val;
+        this.setState({ data });
     };
 
-    moveCard = (dragIndex: number, hoverIndex: number) => {
-        const row = this.state.data[dragIndex];
-        let d = [...this.state.data];
-        d.splice(dragIndex, 1);
-        d.splice(hoverIndex, 0, row);
-        this.setState({ data: d });
-    }
+    handleMetaChange = (t: string, value: any) => {
+        const idx = this.state.currentFocus[1];
+        let md = this.state.metadata[idx] || {};
+        md[t] = value;
+        let mtl = [...this.state.metadata];
+        mtl[idx] = md;
+        this.setState({ metadata: mtl });
+    };
 
     render() {
+        const { currentFocus, data } = this.state;
         return (<React.Fragment>
             <div style={{ display: 'flex' }}>
                 <button onClick={this.handleClickAddRow}>Add column</button>
                 <button onClick={this.handleClickRemoveRow}>Remove column</button>
+                <button onClick={this.handleMoveUp}>Move up ↑</button>
+                <button onClick={this.handleMoveDown}>Move down ↓</button>
             </div>
-            <DragDropContextProvider backend={HTML5Backend}>
-                <Table
-                    ref={this.ref as any}
-                    id="test2"
-                    title="teboru"
-                    columns={Models.ColumnEditorModel.columns}
-                    data={this.state.data}
-                    onChange={(v) => {
-                        const data = [...this.state.data];
-                        data[v.row][v.col] = v.val;
-                        this.setState({ data });
-                    }}
-                    onOutOfBounds={this.handleAddRow}
-                    onFocusChange={this.handleFocusChange}
-                    rowRenderer={(p: any) => <DraggableRow {...p}
-                        key={p.rowIndex}
-                        index={p.rowIndex}
-                        id={p.rowIndex}
-                        moveRow={this.moveCard}
-                    />}
-                />
-            </DragDropContextProvider>
+            <Table
+                ref={this.ref as any}
+                id="test2"
+                title="teboru"
+                columns={Models.ColumnEditorModel.columns}
+                data={this.state.data}
+                onChange={this.handleChange}
+                onOutOfBounds={this.handleAddRow}
+                onFocusChange={this.handleFocusChange}
+                keepFocus
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ flex: 2 }}>Default:</div>
+                <div style={{ flex: 8 }}>
+                    <CreatableSelect
+                        options={Models.ColumnEditorModel.typeDefaults[data[currentFocus[1]].type] || Models.ColumnEditorModel.typeDefaults['default']}
+                        value={(this.state.metadata[currentFocus[1]] || { default: '' }).default}
+                        onChange={this.handleMetaChange.bind(this, 'default')}
+                        formatCreateLabel={() => null}
+                    />
+                </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ flex: 2 }}>Comment:</div>
+                <div style={{ flex: 8 }}>
+                    <textarea
+                        rows={1}
+                        value={(this.state.metadata[currentFocus[1]] || { comment: '' }).comment}
+                        onChange={(e) => this.handleMetaChange('comment', e.target.value)}
+                    />
+                </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ flex: 2 }}>Dimensions:</div>
+                <div style={{ flex: 8 }}>
+                    <input
+                        type="number"
+                        value={(this.state.metadata[currentFocus[1]] || { dimensions: '' }).dimensions}
+                        onChange={(e) => this.handleMetaChange('dimensions', e.target.value)}
+                    />
+                </div>
+            </div>
 
         </React.Fragment>
         )
@@ -150,7 +240,7 @@ const App = ({ sayhi }) => {
 
 export default connect(
     () => ({}),
-    (dispatch) => ({
+    (dispatch: any) => ({
         sayhi: () => dispatch(actions.sayHi("hi")),
     })
 )(App);

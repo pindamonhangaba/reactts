@@ -3,8 +3,8 @@ import Editable from 'app/components/react-aria-table/elements/editable';
 import Selectable from 'app/components/react-aria-table/elements/selectable';
 import Checkable from 'app/components/react-aria-table/elements/checkable';
 
-
-const typeOptions = ['varchar', 'time', 'timestamp', 'date', 'int8', 'int2', 'jsonb', 'json'].map(o => ({ value: o, label: o }));
+const validTypes = ['varchar', 'time', 'timestamp', 'date', 'int8', 'int2', 'jsonb', 'json'];
+const typeOptions = validTypes.map(o => ({ value: o, label: o }));
 
 export class ColumnTypesSel extends React.Component<any> {
     ref = React.createRef()
@@ -31,5 +31,8 @@ export const ColumnEditorModel = {
         { key: 'decimals', label: 'Decimals', renderer: Editable },
         { key: 'not-null', label: 'Not null', renderer: Checkable },
         { key: 'pk', label: 'PK', renderer: Checkable },
-    ] as Array<Column>
+    ] as Array<Column>,
+    typeDefaults: {
+        default: [{ value: 'NULL', label: 'NULL' }, { value: '', label: 'Empty string' }],
+    },
 };

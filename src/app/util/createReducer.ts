@@ -37,26 +37,30 @@ export function hen<T extends Hen<any>>(cls: T): [Reducer, ActionGroup<T>] {
   let reducers = {};
   let actions = {};
 
-  for (var key in cls) {
-    if (cls.hasOwnProperty(key)) {
-      const actionType = `${actionPrefix}.${key}`;
-      const p = cls[key];
-      if (typeof p === 'function') {
-        reducers[actionType] = (state: T, action: { type: string, payload: any }) => {
-          p.call({ ...cls, state }, ...action.payload);
-          return state;
-        };
-
-        actions[key as any] = function () {
-          const act = {
-            type: actionType,
-            payload: Array.from(arguments),
-          };
-          return act;
-        };
-      }
+  // create reducers
+  Reflect.ownKeys(Reflect.getPrototypeOf(cls)).concat(Reflect.ownKeys(cls)).forEach(key => {
+    if (key === 'constructor') { return; }
+    const actionType = `${actionPrefix}.${key as string}`;
+    const p = cls[key];
+    if (typeof p !== 'function') {
+      return;
     }
-  }
+
+    reducers[actionType] = (state: T, action: { type: string, payload: any }) => {
+      let contextClass = { state };
+      p.call(contextClass, ...action.payload);
+      return contextClass.state;
+    };
+
+    actions[key as any] = function () {
+      const act = {
+        type: actionType,
+        payload: Array.from(arguments),
+      };
+      return act;
+    };
+  });
+
   const red = createReducer(cls.state, reducers);
   return [red, actions as ActionGroup<T>];
 }
