@@ -66,6 +66,7 @@
         "react-router-dom": "^5.0.0",
         "react-select": "^2.4.2",
         "redux": "^4.0.1",
+        "redux-immer": "^1.0.2",
         "redux-localstorage": "^0.4.1",
         "redux-thunk": "^2.3.0",
         "reselect": "^4.0.0"

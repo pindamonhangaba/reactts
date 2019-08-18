@@ -46,10 +46,11 @@ export function hen<T extends Hen<any>>(cls: T): [Reducer, ActionGroup<T>] {
       return;
     }
 
+
     reducers[actionType] = (state: T, action: { type: string, payload: any }) => {
-      let contextClass = { state };
-      p.call(contextClass, ...action.payload);
-      return contextClass.state;
+      let reducerClass = new (cls as any).constructor(state);
+      reducerClass[key](...action.payload);
+      return state;
     };
 
     actions[key as any] = function () {

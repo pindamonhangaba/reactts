@@ -1,6 +1,6 @@
 import { hen, Hen } from 'app/util/createReducer';
-//import { createSelector } from 'reselect';
-//import { RootState } from 'app/reducers';
+import { createSelector } from 'reselect';
+import { RootState } from 'app/reducers';
 
 export interface MenuItem {
   title: string;
@@ -10,28 +10,33 @@ export interface MenuItem {
   permissions?: Array<string>;
 }
 
-// Actions
-export const ActionTypes = {};
-
-// Reducers
-
-
-interface MyRedux {
-  phrase?: string
+type Item = {
+  value: string,
+  label: string
 }
 
-const initialState: MyRedux = {};
+export interface InitialState {
+  phrase?: string
+  items: Array<Item>
+}
 
-class MyAction extends Hen<MyRedux> {
+const initialState: InitialState = {
+  items: [],
+};
+
+class MyAction extends Hen<InitialState> {
   sayHi = (say: string) => {
     this.state.phrase = say;
   };
 }
 
-//export const menuReducer = createReducer(initialState, {});
-
 // Selectors
-//const mainSelector: any = (state: RootState) => state.menu;
+const mainSelector = (state: RootState) => state.menu;
+
+const itemsSelector = createSelector(mainSelector, (state) => state.items);
+
+
+itemsSelector;
 
 export const [menuReducer, actions] = hen(new MyAction(initialState));
 
