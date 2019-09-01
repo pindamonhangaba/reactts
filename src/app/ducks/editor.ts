@@ -1,47 +1,44 @@
-import { hen, Hen } from 'app/util/createReducer';
-//import { createSelector } from 'reselect';
-//import { RootState } from 'app/reducers';
+import { hen, Hen } from "app/util/createReducer";
+import { createSelector } from "reselect";
+import DB from "models/pg";
+import { RootState } from "app/reducers";
 
-export interface MenuItem {
-  title: string;
-  description?: string;
-  to: string;
-  icon: string;
-  permissions?: Array<string>;
+type TableMap = { [k: string]: DB.Table };
+
+export interface InitialState {
+  tables: TableMap;
 }
 
-// Actions
-export const ActionTypes = {};
+const initialState: InitialState = {
+  tables: {},
+};
 
-// Reducers
+// Selectors
+const mainSelector = (state: RootState) => state.editor;
 
+export const tableSelector = createSelector(
+  mainSelector,
+  (editor) => ({
+    tables: editor.tables,
+    tableList: Object.keys(editor.tables).map((k) => editor.tables[k]),
+  })
+);
 
-interface MyRedux {
-  phrase?: string
-}
+export const getTables = createSelector(
+  tableSelector,
+  (ts) => ({
+    tables: ts.tableList,
+  })
+);
 
-const initialState: MyRedux = {};
-
-class MyAction extends Hen<MyRedux> {
-  sayHi(say: string) {
-    this.state.phrase = say;
-  };
-
-  async fetchGreetings() {
-    return (dispatch) => {
-      return this.sayHi('okok');
-    };
+class EditorReactions extends Hen<InitialState> {
+  removeTable(tName: string) {
+    delete this.state.tables[tName];
+  }
+  setTable(tName: string, t: DB.Table) {
+    this.state.tables[tName] = t;
   }
 }
 
-//export const menuReducer = createReducer(initialState, {});
-
-// Selectors
-//const mainSelector: any = (state: RootState) => state.menu;
-
-
-export const [menuReducer, actions] = hen(new MyAction(initialState));
-
-actions.sayHi('23')
-
+export const [menuReducer, actions] = hen(new EditorReactions(initialState));
 export default menuReducer;
