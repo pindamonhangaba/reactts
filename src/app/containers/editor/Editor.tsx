@@ -1,7 +1,8 @@
 import * as React from "react";
 
-import Sidebar from "app/containers/editor/sidebar/Sidebar";
-import Toolbar from "app/containers/editor/toolbar/Toolbar";
+import Sidebar from "./sidebar/Sidebar";
+import Toolbar from "./toolbar/Toolbar";
+import Graph from "./tablegraph/Graph";
 import Header from "app/components/header/Header";
 
 export class Editor extends React.Component<{}, {}> {
@@ -32,6 +33,7 @@ export class Editor extends React.Component<{}, {}> {
           </div>
           <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <Toolbar />
+            <Graph />
           </div>
         </div>
       </div>
