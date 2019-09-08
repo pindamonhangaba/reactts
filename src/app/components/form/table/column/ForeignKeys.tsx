@@ -5,11 +5,16 @@ import CreatableSelect from "react-select/lib/Creatable";
 import Table from "app/components/react-aria-table";
 import { Models } from "app/components/tables";
 
+export interface ForeignKeysFormProps {
+  value?: any;
+  onChange?: (data: any) => void;
+  availableColumns: Array<string>;
+  availableTables: Array<string>;
+  availableTableColumns: { [t: string]: Array<string> };
+}
+
 export default class ForeignKeysForm extends React.Component<
-  {
-    value?: any;
-    onChange?: (data: any) => void;
-  },
+  ForeignKeysFormProps,
   any
 > {
   state = {
@@ -106,17 +111,41 @@ export default class ForeignKeysForm extends React.Component<
     this.setState({ metadata: mtl });
   };
 
+  mergedAvailabeOptions() {
+    const {
+      availableColumns = [],
+      availableTables = [],
+      availableTableColumns = {},
+    } = this.props;
+    const { data } = this.state;
+
+    let ops = Models.FKEditorModel.columns;
+    // table cols
+    ops[1].cellProps.options = availableColumns.map((c) => ({
+      value: c,
+      label: c,
+    }));
+    // table ref options
+    ops[3].cellProps.options = availableTables.map((c) => ({
+      value: c,
+      label: c,
+    }));
+    // table ref cols
+    ops[4].cellProps.options = availableTableColumns[data[ops[4].key]];
+    return ops;
+  }
+
   render() {
     const { currentFocus, data } = this.state;
-    data;
+    const mergedColumns = this.mergedAvailabeOptions();
     return (
       <React.Fragment>
         <Table
           ref={this.ref as any}
           id="fktable"
           title="Foreign keys"
-          columns={Models.FKEditorModel.columns}
-          data={this.state.data}
+          columns={mergedColumns}
+          data={data}
           onChange={this.handleChange}
           onOutOfBounds={this.handleAddRow}
           onFocusChange={this.handleFocusChange}

@@ -22,8 +22,17 @@ const initialState: InitialState = {
   alerts: [],
   tables: {
     user: {
-      columns: [{ name: "user_id", type: "uuid", nonNull: true, primary: 1 }],
+      columns: [
+        { name: "user_id", type: "uuid", nonNull: true, primary: 1 },
+        { name: "addr_id", type: "int8", nonNull: true },
+      ],
       name: "user",
+    },
+    address: {
+      columns: [
+        { name: "addr_id", type: "serial8", nonNull: true, primary: 1 },
+      ],
+      name: "address",
     },
   },
 };
@@ -43,6 +52,18 @@ export const getTables = createSelector(
   tableSelector,
   (ts) => ({
     tables: ts.tableList,
+  })
+);
+
+export const getAvailabeTables = createSelector(
+  tableSelector,
+  (ts) => ({
+    tables: ts.tableList,
+    availabeTables: ts.tableList.map((t) => t.name),
+    availabeTableColumns: ts.tableList.reduce(
+      (map, t) => ((map[t.name] = t.columns), map),
+      {}
+    ),
   })
 );
 

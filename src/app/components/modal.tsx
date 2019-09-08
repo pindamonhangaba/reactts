@@ -59,11 +59,7 @@ export default function Modal({
             ✖
           </button>
         </header>
-        <div
-          style={{ backgroundColor: "#f0f0f0", margin: 0, overflow: "hidden" }}
-        >
-          {children}
-        </div>
+        <div style={{ backgroundColor: "#f0f0f0", margin: 0 }}>{children}</div>
       </div>
     </AriaModal>
   );

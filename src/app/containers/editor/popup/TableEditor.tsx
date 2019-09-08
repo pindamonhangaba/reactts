@@ -4,7 +4,7 @@ import { createModal } from "react-modal-promise";
 import Tabs from "app/components/tabs";
 import Modal from "app/components/modal";
 import ColumnsForm from "app/components/form/table/column/Columns";
-import ForeignKeysForm from "app/components/form/table/column/ForeignKeys";
+import { ForeignKeysSection } from "./Sections";
 
 export class MyModal extends React.Component<{
   open: boolean;
@@ -14,7 +14,7 @@ export class MyModal extends React.Component<{
   state = { tableData: [] as any, tableName: this.props.tableName };
 
   handleTableDataChange = (d: any) => {
-    this.setState({ tableData: d });
+    this.setState({ tableData: d.columns });
   };
   handleTableNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ tableName: e.target.value });
@@ -29,30 +29,33 @@ export class MyModal extends React.Component<{
     close();
   };
 
-  tabDescriptions = [
-    {
-      title: "Columns",
-      id: "t1",
-      content: (
-        <div>
-          <ColumnsForm onChange={this.handleTableDataChange} />
-        </div>
-      ),
-    },
-    {
-      title: "Foreign keys",
-      id: "t2",
-      content: (
-        <div>
-          <ForeignKeysForm onChange={(a) => console.log(a)} />
-        </div>
-      ),
-    },
-  ];
-
   public render() {
     const { open } = this.props;
-    const { tableName } = this.state;
+    const { tableName, tableData } = this.state;
+
+    const tabDescriptions = [
+      {
+        title: "Columns",
+        id: "t1",
+        content: (
+          <div>
+            <ColumnsForm onChange={this.handleTableDataChange} />
+          </div>
+        ),
+      },
+      {
+        title: "Foreign keys",
+        id: "t2",
+        content: (
+          <div>
+            <ForeignKeysSection
+              onChange={(a: any) => console.log(a)}
+              availableColumns={tableData.map((t: any) => t.name)}
+            />
+          </div>
+        ),
+      },
+    ];
     return (
       open && (
         <Modal titleText="test me" onClose={this.handleCancel}>
@@ -71,7 +74,7 @@ export class MyModal extends React.Component<{
               value={tableName}
               onChange={this.handleTableNameChange}
             />
-            <Tabs tabs={this.tabDescriptions} defaultActive="t1" />
+            <Tabs tabs={tabDescriptions} defaultActive="t1" />
             <footer
               style={{
                 display: "flex",

@@ -4,6 +4,7 @@ import Sidebar from "./sidebar/Sidebar";
 import Toolbar from "./toolbar/Toolbar";
 import Graph from "./tablegraph/Graph";
 import Header from "app/components/header/Header";
+import "./styles.css";
 
 export class Editor extends React.Component<{}, {}> {
   public render() {

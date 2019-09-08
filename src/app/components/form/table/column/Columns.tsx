@@ -21,7 +21,8 @@ export default class ColumnsForm extends React.Component<
 
   updateParent() {
     const { onChange = (d: any) => undefined } = this.props;
-    onChange(this.state.data);
+    const { data, metadata } = this.state;
+    onChange({ columns: data, metadata });
   }
   handleAddRow = (coord: Table.Coord) => {
     const { data } = this.state;
