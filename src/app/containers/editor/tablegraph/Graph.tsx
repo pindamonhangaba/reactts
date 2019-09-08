@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import DB from "models/pg";
+import * as DB from "app/models/pg";
 import { getTables } from "app/ducks/editor";
 
 import GraphComponent from "app/components/tablegraph/Graph";

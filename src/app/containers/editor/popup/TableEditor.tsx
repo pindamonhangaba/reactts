@@ -4,13 +4,14 @@ import { createModal } from "react-modal-promise";
 import Tabs from "app/components/tabs";
 import Modal from "app/components/modal";
 import ColumnsForm from "app/components/form/table/column/Columns";
+import ForeignKeysForm from "app/components/form/table/column/ForeignKeys";
 
 export class MyModal extends React.Component<{
   open: boolean;
   close: (...d: any) => void;
   tableName?: string;
 }> {
-  state = { tableData: {} as any, tableName: this.props.tableName };
+  state = { tableData: [] as any, tableName: this.props.tableName };
 
   handleTableDataChange = (d: any) => {
     this.setState({ tableData: d });
@@ -21,7 +22,7 @@ export class MyModal extends React.Component<{
   handleAccept = () => {
     const { close } = this.props;
     const { tableData, tableName } = this.state;
-    close({ ...tableData, name: tableName });
+    close({ columns: [...tableData], name: tableName });
   };
   handleCancel = () => {
     const { close } = this.props;
@@ -41,7 +42,11 @@ export class MyModal extends React.Component<{
     {
       title: "Foreign keys",
       id: "t2",
-      content: <div>Foreign keys</div>,
+      content: (
+        <div>
+          <ForeignKeysForm onChange={(a) => console.log(a)} />
+        </div>
+      ),
     },
   ];
 

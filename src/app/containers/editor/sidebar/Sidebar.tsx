@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 
-import DB from "models/pg";
+import * as DB from "app/models/pg";
 import { getTables } from "app/ducks/editor";
 
 import IconTable from "app/components/icon/Table";
@@ -22,6 +22,7 @@ export class Editor extends React.Component<SidebarProps, {}> {
         <ul style={{ listStyle: "none", padding: 0 }}>
           {this.props.tables.map((t) => (
             <li
+              key={t.name}
               style={{
                 display: "flex",
                 alignItems: "center",

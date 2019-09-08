@@ -24,7 +24,7 @@ export default class Graph extends PureComponent<GraphProps> {
         style={{ overflow: "auto", display: "flex", flexDirection: "column" }}
       >
         <div style={{ background: "#f3f3f3" }}>
-          <svg height="calc(100vh - 100px)" width="100%">
+          <svg height="calc(100vh - 200px)" width="100%">
             <Canvas zoom={this.state.zoom} tables={tables} />
           </svg>
         </div>

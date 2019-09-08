@@ -22,13 +22,28 @@ export default class DraggableSVG extends PureComponent<
       y: e.pageY,
     };
     document.addEventListener("mousemove", this.handleMouseMove);
+    document.addEventListener("mouseleave", this.handleCheckMouseLeaveDocument);
 
     const { beforePositionChange } = this.props;
     beforePositionChange && beforePositionChange(this.state);
   };
 
+  handleCheckMouseLeaveDocument = (e: MouseEvent) => {
+    if (
+      e.clientY <= 0 ||
+      e.clientX <= 0 ||
+      (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)
+    ) {
+      this.handleMouseUp();
+    }
+  };
+
   handleMouseUp = () => {
     document.removeEventListener("mousemove", this.handleMouseMove);
+    document.removeEventListener(
+      "mouseleave",
+      this.handleCheckMouseLeaveDocument
+    );
     this.coords = { x: 0, y: 0 };
   };
 
@@ -61,7 +76,7 @@ export default class DraggableSVG extends PureComponent<
         y={y}
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
-        onMouseOut={this.handleMouseUp}
+        //onMouseOut={this.handleMouseUp}
       >
         {children}
       </svg>

@@ -167,6 +167,7 @@ export default class TableRender extends PureComponent<
       y: e.pageY,
     };
     document.addEventListener("mousemove", this.handleMouseMove);
+    document.addEventListener("mouseout", this.handleCheckMouseLeaveDocument);
 
     const {
       onPositionChange,
@@ -186,9 +187,23 @@ export default class TableRender extends PureComponent<
       );
   };
 
+  handleCheckMouseLeaveDocument = (e: MouseEvent) => {
+    if (
+      e.clientY <= 0 ||
+      e.clientX <= 0 ||
+      (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)
+    ) {
+      this.handleMouseUp(e);
+    }
+  };
+
   handleMouseUp = (e: any) => {
     e.stopPropagation();
     document.removeEventListener("mousemove", this.handleMouseMove);
+    document.removeEventListener(
+      "mouseout",
+      this.handleCheckMouseLeaveDocument
+    );
     this.coords = { x: 0, y: 0 };
   };
 
@@ -237,7 +252,7 @@ export default class TableRender extends PureComponent<
         x={x}
         y={y}
         onMouseOver={this.handleMouseOver}
-        onMouseOut={this.handleMouseOut}
+        //onMouseOut={this.handleMouseOut}
       >
         <svg
           className="table-header"
@@ -245,7 +260,7 @@ export default class TableRender extends PureComponent<
           width={width}
           onMouseDown={this.handleMouseDown}
           onMouseUp={this.handleMouseUp}
-          onMouseOut={this.handleMouseUp}
+          //onMouseOut={this.handleMouseUp}
         >
           <rect height={HEIGHT} width={width}></rect>
           <text
