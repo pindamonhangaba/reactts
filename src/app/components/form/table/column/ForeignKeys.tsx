@@ -131,13 +131,18 @@ export default class ForeignKeysForm extends React.Component<
       label: c,
     }));
     // table ref cols
-    ops[4].cellProps.options = availableTableColumns[data[ops[4].key]];
+    ops[4].cellProps.options = (i: number) =>
+      (availableTableColumns[(data[i] || [])[ops[3].key]] || []).map((e) => ({
+        value: e,
+        label: e,
+      }));
     return ops;
   }
 
   render() {
     const { currentFocus, data } = this.state;
     const mergedColumns = this.mergedAvailabeOptions();
+
     return (
       <React.Fragment>
         <Table

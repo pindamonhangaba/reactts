@@ -21,8 +21,6 @@ class Test extends React.Component<any> {
 
 export default connect(
   (state: any) => {
-    console.log("--> maptoprosp", state);
-
     return {
       items: state.hen.items,
     };

@@ -11,18 +11,25 @@ export class MyModal extends React.Component<{
   close: (...d: any) => void;
   tableName?: string;
 }> {
-  state = { tableData: [] as any, tableName: this.props.tableName };
+  state = { tableData: [] as any, tableName: this.props.tableName, fkData: [] };
 
   handleTableDataChange = (d: any) => {
     this.setState({ tableData: d.columns });
+  };
+  handleFKDataChange = (d: any) => {
+    this.setState({ fkData: d });
   };
   handleTableNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ tableName: e.target.value });
   };
   handleAccept = () => {
     const { close } = this.props;
-    const { tableData, tableName } = this.state;
-    close({ columns: [...tableData], name: tableName });
+    const { tableData, tableName, fkData } = this.state;
+    close({
+      columns: [...tableData],
+      references: [...fkData],
+      name: tableName,
+    });
   };
   handleCancel = () => {
     const { close } = this.props;
@@ -49,7 +56,7 @@ export class MyModal extends React.Component<{
         content: (
           <div>
             <ForeignKeysSection
-              onChange={(a: any) => console.log(a)}
+              onChange={this.handleFKDataChange}
               availableColumns={tableData.map((t: any) => t.name)}
             />
           </div>

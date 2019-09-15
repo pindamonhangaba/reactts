@@ -63,7 +63,6 @@ class DataTable extends React.Component<DataTable.Props, DataTable.State> {
   render() {
     const { id, title, columns, data } = this.props;
     const { focused } = this.state;
-    console.log(focused);
 
     return (
       <table role="grid" aria-labelledby={id}>

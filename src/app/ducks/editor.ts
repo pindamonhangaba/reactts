@@ -27,6 +27,16 @@ const initialState: InitialState = {
         { name: "addr_id", type: "int8", nonNull: true },
       ],
       name: "user",
+      references: [
+        {
+          name: "addr_id_fk",
+          columns: ["addr_id"],
+          tableRef: "address",
+          columnsRef: ["addr_id"],
+          defferrable: false,
+          deferred: false,
+        },
+      ],
     },
     address: {
       columns: [
@@ -55,13 +65,13 @@ export const getTables = createSelector(
   })
 );
 
-export const getAvailabeTables = createSelector(
+export const getAvailableTables = createSelector(
   tableSelector,
   (ts) => ({
     tables: ts.tableList,
-    availabeTables: ts.tableList.map((t) => t.name),
-    availabeTableColumns: ts.tableList.reduce(
-      (map, t) => ((map[t.name] = t.columns), map),
+    availableTables: ts.tableList.map((t) => t.name),
+    availableTableColumns: ts.tableList.reduce(
+      (map, t) => ((map[t.name] = t.columns.map((c) => c.name)), map),
       {}
     ),
   })
