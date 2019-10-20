@@ -14,7 +14,9 @@ export class Editor extends React.Component<SidebarProps, {}> {
   handleAddTable = () => {
     TableEditorPopup().then((r: any) => {
       if (!r) return;
-      this.props.addTable(r.name, r);
+      console.log("-->", r);
+
+      //this.props.addTable(r.name, r);
     });
   };
   public render() {

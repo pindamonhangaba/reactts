@@ -11,12 +11,19 @@ export class MyModal extends React.Component<{
   close: (...d: any) => void;
   tableName?: string;
 }> {
-  state = { tableData: [] as any, tableName: this.props.tableName, fkData: [] };
+  state = {
+    tableData: { columns: [] as Array<any>, metadata: {} },
+    tableName: this.props.tableName,
+    fkData: {} as { entries: Array<any>; metadata: Array<any> },
+  };
 
   handleTableDataChange = (d: any) => {
-    this.setState({ tableData: d.columns });
+    console.log("--> handleTableDataChange", d);
+    this.setState({ tableData: d });
   };
   handleFKDataChange = (d: any) => {
+    console.log("-->", d);
+
     this.setState({ fkData: d });
   };
   handleTableNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,10 +31,18 @@ export class MyModal extends React.Component<{
   };
   handleAccept = () => {
     const { close } = this.props;
-    const { tableData, tableName, fkData } = this.state;
+    const {
+      tableData: { columns = [], metadata: colMetadata = [] },
+      tableName = "",
+      fkData: { entries = [], metadata = [] } = {},
+    } = this.state;
     close({
-      columns: [...tableData],
-      references: [...fkData],
+      columns: [
+        ...columns.map((e, i) => ({ ...e, metadata: colMetadata[i] || {} })),
+      ],
+      references: [
+        ...entries.map((e, i) => ({ ...e, metadata: metadata[i] || {} })),
+      ],
       name: tableName,
     });
   };
@@ -38,7 +53,7 @@ export class MyModal extends React.Component<{
 
   public render() {
     const { open } = this.props;
-    const { tableName, tableData } = this.state;
+    const { tableName, tableData, fkData } = this.state;
 
     const tabDescriptions = [
       {
@@ -46,7 +61,10 @@ export class MyModal extends React.Component<{
         id: "t1",
         content: (
           <div>
-            <ColumnsForm onChange={this.handleTableDataChange} />
+            <ColumnsForm
+              value={tableData}
+              onChange={this.handleTableDataChange}
+            />
           </div>
         ),
       },
@@ -56,8 +74,9 @@ export class MyModal extends React.Component<{
         content: (
           <div>
             <ForeignKeysSection
+              value={fkData}
               onChange={this.handleFKDataChange}
-              availableColumns={tableData.map((t: any) => t.name)}
+              availableColumns={tableData.columns.map((t: any) => t.name)}
             />
           </div>
         ),

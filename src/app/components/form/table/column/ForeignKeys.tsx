@@ -6,8 +6,8 @@ import Table from "app/components/react-aria-table";
 import { Models } from "app/components/tables";
 
 export interface ForeignKeysFormProps {
-  value?: any;
-  onChange?: (data: any) => void;
+  value?: { entries: Array<any>; metadata: Array<any> };
+  onChange?: (data: { entries: Array<any>; metadata: any }) => void;
   availableColumns: Array<string>;
   availableTables: Array<string>;
   availableTableColumns: { [t: string]: Array<string> };
@@ -18,15 +18,19 @@ export default class ForeignKeysForm extends React.Component<
   any
 > {
   state = {
-    data: this.props.value || ([{}] as any),
+    data: (this.props.value || { entries: [] }).entries || ([{}] as any),
     currentFocus: [0, 0],
-    metadata: [] as any,
+    metadata: (this.props.value || { metadata: [] }).metadata || ([] as any),
   };
   ref = React.createRef();
 
   updateParent() {
     const { onChange = (d: any) => undefined } = this.props;
-    onChange(this.state.data);
+    const { data = [], metadata = {} } = this.state;
+    onChange({
+      entries: data,
+      metadata,
+    });
   }
   handleAddRow = (coord: Table.Coord) => {
     const { data } = this.state;
@@ -106,7 +110,7 @@ export default class ForeignKeysForm extends React.Component<
     const idx = this.state.currentFocus[1];
     let md = this.state.metadata[idx] || {};
     md[t] = value;
-    let mtl = [...this.state.metadata];
+    let mtl = { ...this.state.metadata };
     mtl[idx] = md;
     this.setState({ metadata: mtl });
   };

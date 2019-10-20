@@ -13,9 +13,9 @@ export default class ColumnsForm extends React.Component<
   any
 > {
   state = {
-    data: this.props.value || ([{}] as any),
+    data: (this.props.value || {}).columns || ([{}] as any),
     currentFocus: [0, 0],
-    metadata: [] as any,
+    metadata: (this.props.value || {}).metadata || ([] as any),
   };
   ref = React.createRef();
 
@@ -27,7 +27,11 @@ export default class ColumnsForm extends React.Component<
   handleAddRow = (coord: Table.Coord) => {
     const { data } = this.state;
     const l = data.length;
-    if (coord[1] >= l && Object.entries(data[l - 1]).length > 0) {
+    if (
+      l > 0 &&
+      coord[1] >= l &&
+      Object.entries(data[l - 1] || {}).length > 0
+    ) {
       this.setState({ data: [...data, {}] }, () => this.updateParent());
       if (this.ref.current) {
         (this.ref.current as any).setFocused(coord);
@@ -39,7 +43,9 @@ export default class ColumnsForm extends React.Component<
   };
   handleClickAddRow = () => {
     const { data } = this.state;
-    if (Object.entries(data[data.length - 1]).length == 0) {
+    const l = data.length;
+    console.log("-->", data, data[data.length - 1]);
+    if (l !== 0 && Object.entries(data[l - 1] || {}).length == 0) {
       return;
     }
     this.setState({ data: [...data, {}] }, () => this.updateParent());
@@ -120,9 +126,11 @@ export default class ColumnsForm extends React.Component<
     const idx = this.state.currentFocus[1];
     let md = this.state.metadata[idx] || {};
     md[t] = value;
-    let mtl = [...this.state.metadata];
+    let mtl = { ...this.state.metadata };
     mtl[idx] = md;
-    this.setState({ metadata: mtl });
+    this.setState({ metadata: mtl }, () => {
+      this.updateParent();
+    });
   };
 
   render() {
@@ -152,9 +160,11 @@ export default class ColumnsForm extends React.Component<
           <div style={{ flex: 8 }}>
             <CreatableSelect
               options={
-                Models.ColumnEditorModel.typeDefaults[
-                  data[currentFocus[1]].type
-                ] || Models.ColumnEditorModel.typeDefaults["default"]
+                (data.length &&
+                  Models.ColumnEditorModel.typeDefaults[
+                    data[currentFocus[1]].type
+                  ]) ||
+                Models.ColumnEditorModel.typeDefaults["default"]
               }
               value={
                 (this.state.metadata[currentFocus[1]] || { default: "" })
