@@ -50,32 +50,23 @@ const initialState: InitialState = {
 // Selectors
 const mainSelector = (state: RootState) => state.editor;
 
-export const tableSelector = createSelector(
-  mainSelector,
-  (editor) => ({
-    tables: editor.tables,
-    tableList: Object.keys(editor.tables).map((k) => editor.tables[k]),
-  })
-);
+export const tableSelector = createSelector(mainSelector, (editor) => ({
+  tables: editor.tables,
+  tableList: Object.keys(editor.tables).map((k) => editor.tables[k]),
+}));
 
-export const getTables = createSelector(
-  tableSelector,
-  (ts) => ({
-    tables: ts.tableList,
-  })
-);
+export const getTables = createSelector(tableSelector, (ts) => ({
+  tables: ts.tableList,
+}));
 
-export const getAvailableTables = createSelector(
-  tableSelector,
-  (ts) => ({
-    tables: ts.tableList,
-    availableTables: ts.tableList.map((t) => t.name),
-    availableTableColumns: ts.tableList.reduce(
-      (map, t) => ((map[t.name] = t.columns.map((c) => c.name)), map),
-      {}
-    ),
-  })
-);
+export const getAvailableTables = createSelector(tableSelector, (ts) => ({
+  tables: ts.tableList,
+  availableTables: ts.tableList.map((t) => t.name),
+  availableTableColumns: ts.tableList.reduce(
+    (map, t) => ((map[t.name] = t.columns.map((c) => c.name)), map),
+    {}
+  ),
+}));
 
 class EditorReactions extends Hen<InitialState> {
   pushAlert(a: Alert) {
@@ -84,26 +75,22 @@ class EditorReactions extends Hen<InitialState> {
   removeTable(tName: string) {
     delete this.state.tables[tName];
   }
-  setTable(tName: string, t: DB.Table) {
+  updateTable(tName: string, t: DB.Table) {
     this.state.tables[tName] = t;
-  }
-  createTable(tName: string, t: DB.Table) {
-    if (!this.state.tables[tName]) {
-      this.state.tables[tName] = t;
-    }
   }
 }
 
 export const [menuReducer, actions] = hen(new EditorReactions(initialState));
 export default menuReducer;
 
-export function createTable(tName: string, t: DB.Table) {
+export function updateTable(t: DB.Table) {
   return (dispatch, getState) => {
     const state = getState();
-    if (!!state.tables[tName]) {
+    const { tables } = mainSelector(state);
+    if (!!tables[t.name]) {
       dispatch(actions.pushAlert({ status: AlertStatus.Success, message: "" }));
     }
 
-    dispatch(actions.setTable(tName, t));
+    dispatch(actions.updateTable(t.name, t));
   };
 }

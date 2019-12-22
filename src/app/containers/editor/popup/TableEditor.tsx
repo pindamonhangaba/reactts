@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createModal } from "react-modal-promise";
 
+import * as DB from "app/models/pg";
 import Tabs from "app/components/tabs";
 import Modal from "app/components/modal";
 import ColumnsForm from "app/components/form/table/column/Columns";
@@ -10,11 +11,15 @@ export class MyModal extends React.Component<{
   open: boolean;
   close: (...d: any) => void;
   tableName?: string;
+  initialValues?: DB.Table;
 }> {
   state = {
     tableData: { columns: [] as Array<any>, metadata: {} },
     tableName: this.props.tableName,
     fkData: {} as { entries: Array<any>; metadata: Array<any> },
+    ...(this.props.initialValues
+      ? mapFromDBTable(this.props.initialValues)
+      : {}),
   };
 
   handleTableDataChange = (d: any) => {
@@ -28,20 +33,7 @@ export class MyModal extends React.Component<{
   };
   handleAccept = () => {
     const { close } = this.props;
-    const {
-      tableData: { columns = [], metadata: colMetadata = [] },
-      tableName = "",
-      fkData: { entries = [], metadata = [] } = {},
-    } = this.state;
-    close({
-      columns: [
-        ...columns.map((e, i) => ({ ...e, metadata: colMetadata[i] || {} })),
-      ],
-      references: [
-        ...entries.map((e, i) => ({ ...e, metadata: metadata[i] || {} })),
-      ],
-      name: tableName,
-    });
+    close(mapToDBTable(this.state));
   };
   handleCancel = () => {
     const { close } = this.props;
@@ -120,3 +112,85 @@ export class MyModal extends React.Component<{
 const myPromiseModal = createModal(MyModal);
 
 export default myPromiseModal;
+
+function mapToDBTable(state: any) {
+  const {
+    tableData: { columns = [], metadata: colMetadata = [] },
+    tableName = "",
+    fkData: { entries = [], metadata = [] } = {},
+  } = state;
+  const r = {
+    columns: [
+      ...columns.map((e, i) => ({ ...e, metadata: colMetadata[i] || {} })),
+    ],
+    references: [
+      ...entries.map((e, i) => ({ ...e, metadata: metadata[i] || {} })),
+    ],
+    name: tableName,
+  };
+  const table: DB.Table = {
+    name: r.name,
+    columns: r.columns.map((c: any) => ({
+      name: c.name,
+      type: c.type,
+      nonNull: c.nonNull,
+      primary: c.pk,
+      default: c?.metadata?.default,
+      dimensions: c?.metadata?.dimensions,
+      comment: c?.metadata?.comment,
+    })),
+    references: r.references?.map?.((ref: any) => ({
+      name: ref.name,
+      columns: [ref.columns],
+      schemaRef: ref?.schemaRef,
+      tableRef: ref.tableRef,
+      columnsRef: [ref.columnsRef],
+      onDelete: ref.onDelete,
+      match: ref?.metadata?.match?.value,
+      defferrable: ref?.metadata?.defferable ?? false,
+      deferred: ref?.metadata?.deferred ?? false,
+      comment: ref?.metadata?.comment,
+    })),
+  };
+  return table;
+}
+
+function mapFromDBTable(t: DB.Table) {
+  let v = {
+    tableName: t.name,
+    tableData: { columns: [] as any, metadata: [] as any },
+    fkData: { entries: [] as any, metadata: [] as any },
+  };
+  t.columns.forEach((c, i) => {
+    v.tableData.columns[i] = {
+      name: c.name,
+      type: c.type,
+      nonNull: c.nonNull,
+      pk: c.primary,
+    };
+    v.tableData.metadata[i] = {
+      default: c.default,
+      dimensions: c.dimensions,
+      comment: c.comment,
+    };
+  });
+
+  t.references?.forEach?.((ref: any, i) => {
+    v.fkData.entries[i] = {
+      name: ref.name,
+      columns: ref.columns,
+      schemaRef: ref.schemaRef,
+      tableRef: ref.tableRef,
+      columnsRef: ref.columnsRef,
+      onDelete: ref.onDelete,
+    };
+
+    v.fkData.metadata[i] = {
+      match: { label: ref.match, value: ref.match },
+      defferrable: ref.defferable ?? false,
+      deferred: ref.deferred ?? false,
+      comment: ref.comment,
+    };
+  });
+  return v;
+}
