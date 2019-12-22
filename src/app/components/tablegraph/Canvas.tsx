@@ -7,21 +7,6 @@ import Grid from "./BackgroundGrid";
 
 const HEIGHT = 32;
 
-export interface Endpoint {
-  table: {
-    width: number;
-    height: number;
-    x: number;
-    y: number;
-    x1: number;
-    y1: number;
-  };
-  x: number;
-  y: number;
-  fieldX: number;
-  fieldY: number;
-}
-
 export default class Canvas extends PureComponent<
   { tables: Array<Table>; zoom?: number },
   {

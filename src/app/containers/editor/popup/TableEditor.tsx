@@ -18,12 +18,9 @@ export class MyModal extends React.Component<{
   };
 
   handleTableDataChange = (d: any) => {
-    console.log("--> handleTableDataChange", d);
     this.setState({ tableData: d });
   };
   handleFKDataChange = (d: any) => {
-    console.log("-->", d);
-
     this.setState({ fkData: d });
   };
   handleTableNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,12 +81,11 @@ export class MyModal extends React.Component<{
     ];
     return (
       open && (
-        <Modal titleText="test me" onClose={this.handleCancel}>
+        <Modal titleText="Table editor" onClose={this.handleCancel}>
           <div
             style={{
               padding: 5,
-              width: 400,
-              height: 450,
+              minHeight: 450,
               display: "flex",
               justifyContent: "space-between",
               flexDirection: "column",

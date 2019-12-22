@@ -122,7 +122,7 @@ class AriaTable extends React.Component<AriaTable.Props, AriaTable.State> {
             ))}
           </tr>
         </thead>
-        <tbody style={{ "-moz-user-select": "none" } as any}>
+        <tbody style={{ MozUserSelect: "none" } as any}>
           {data.map((row, i) => (
             <Row key={i} row={row} rowIndex={i}>
               {columns.map((col, j) => (

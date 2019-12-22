@@ -3,14 +3,7 @@ import Editable from "app/components/react-aria-table/elements/editable";
 import Selectable from "app/components/react-aria-table/elements/selectable";
 import Checkable from "app/components/react-aria-table/elements/checkable";
 import * as DB from "app/models/pg";
-const MultiSelectable = (p: any) => <Selectable isMulti={true} {...p} />;
-interface OptionsFunc {
-  options: (i: number) => Array<{ value: string; label: string }>;
-  index: number;
-}
-const MultiSelectableWithOptions = (p: OptionsFunc | any) => (
-  <Selectable isMulti={true} {...p} options={p.options(p.index)} />
-);
+import { MultiSelectable, MultiSelectableWithOptions } from "./cells";
 
 const validTypes = [
   "varchar",
@@ -89,7 +82,7 @@ export const FKEditorModel = {
       key: "columns",
       label: "Columns",
       renderer: MultiSelectable,
-      cellProps: { options: [] },
+      cellProps: { options: [], multiple: true },
     },
     { key: "schemaRef", label: "Schema", renderer: Editable },
     {
@@ -102,7 +95,7 @@ export const FKEditorModel = {
       key: "columnsRef",
       label: "Referenced columns",
       renderer: MultiSelectableWithOptions,
-      cellProps: { options: () => [] },
+      cellProps: { options: () => [], multiple: true },
     },
     {
       key: "onUpdate",

@@ -1,6 +1,6 @@
 import React from "react";
 
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 import Table from "app/components/react-aria-table";
 import { Models } from "app/components/tables";
@@ -13,9 +13,9 @@ export default class ColumnsForm extends React.Component<
   any
 > {
   state = {
-    data: (this.props.value || {}).columns || ([{}] as any),
+    data: this.props.value?.columns?.length ? this.props.value?.columns : [{}],
     currentFocus: [0, 0],
-    metadata: (this.props.value || {}).metadata || ([] as any),
+    metadata: this.props.value?.metadata ?? [],
   };
   ref = React.createRef();
 
@@ -44,7 +44,6 @@ export default class ColumnsForm extends React.Component<
   handleClickAddRow = () => {
     const { data } = this.state;
     const l = data.length;
-    console.log("-->", data, data[data.length - 1]);
     if (l !== 0 && Object.entries(data[l - 1] || {}).length == 0) {
       return;
     }

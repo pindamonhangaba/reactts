@@ -74,7 +74,7 @@ class DataTable extends React.Component<DataTable.Props, DataTable.State> {
             ))}
           </tr>
         </thead>
-        <tbody style={{ "-moz-user-select": "none" } as any}>
+        <tbody style={{ MozUserSelect: "none" } as any}>
           {data.map((row, i) => (
             <tr key={i}>
               {columns.map((col, j) => (

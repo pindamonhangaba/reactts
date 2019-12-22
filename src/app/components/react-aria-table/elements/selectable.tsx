@@ -1,5 +1,5 @@
 import React from "react";
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 const selStyle = { margin: 0, height: 20, padding: 0 };
 const colourStyles = {
@@ -19,14 +19,16 @@ export interface EditableProps {
   [k: string]: any;
   focused?: boolean;
   component: any;
-  onChangeAccept?: (v: string) => void;
-  options: Array<{ value: string; label: string }>;
+  onChangeAccept?: (v: string | Array<string>) => void;
+  options: Array<KV>;
   multiple?: boolean;
 }
 export interface EditableState {
   editing: boolean;
   value: any;
 }
+
+export type KV = { value: string; label: string }
 
 class Editable extends React.Component<EditableProps, EditableState> {
   ref = React.createRef();
@@ -81,40 +83,48 @@ class Editable extends React.Component<EditableProps, EditableState> {
     this.setState({ editing: false }, this.focus);
     if (this.state.editing) {
       // accept changes
-      this.props.onChangeAccept && this.props.onChangeAccept(this.state.value);
+      const val = 'value' in this.state.value ? this.state.value.value : this.state.value.map(e => e.value);
+      this.props.onChangeAccept?.(val);
     }
   };
-  handleChange = (value: string | { value: string; label: string }) => {
+  handleChange = (value: string | KV) => {
     this.setState(
       { value: typeof value === "object" ? value.value : value },
       this.focus
     );
   };
-  handleSelectChange = (v: { value: string; label: string }) => {
-    // accept changes
-    this.props.onChangeAccept && this.props.onChangeAccept(v.value);
-    this.setState({ value: v.value, editing: false }, this.focus);
+  handleSelectChange = (v: KV| Array<KV>)  => {
+    const val = 'value' in v ? v.value : v.map(e => e.value);
+
+    this.props.onChangeAccept?.(val);
+    console.log('--> changed', v, val);
+    this.setState({ value: v });
   };
 
   render() {
     const { colKey, row, focused, options, multiple } = this.props;
     const { value, editing } = this.state;
     let contents = row[colKey];
-
+    console.log('-->', editing, value, contents);
     if (this.state.editing) {
       contents = (
         <CreatableSelect
           ref={this.inputRef as any}
           options={options || []}
-          onBlur={this.handleBlur}
-          inputValue={editing ? value : contents}
-          onInputChange={this.handleChange}
+          //onBlur={this.handleBlur}
+          //inputValue={editing ? value : contents}
+          value={value}
+          //onInputChange={this.handleChange}
           onChange={this.handleSelectChange}
           formatCreateLabel={() => null}
           placeholder="..."
           tabIndex={focused && this.state.editing ? 0 : -1}
           styles={colourStyles}
           isMulti={multiple}
+          closeMenuOnSelect={false}
+          components={{
+            ClearIndicator: null
+          }}
         />
       );
     }

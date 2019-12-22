@@ -1,6 +1,6 @@
 import React from "react";
 
-import CreatableSelect from "react-select/lib/Creatable";
+import CreatableSelect from "react-select/creatable";
 
 import Table from "app/components/react-aria-table";
 import { Models } from "app/components/tables";
@@ -112,7 +112,7 @@ export default class ForeignKeysForm extends React.Component<
     md[t] = value;
     let mtl = { ...this.state.metadata };
     mtl[idx] = md;
-    this.setState({ metadata: mtl });
+    this.setState({ metadata: mtl }, () => this.updateParent());
   };
 
   mergedAvailabeOptions() {
@@ -221,9 +221,3 @@ export default class ForeignKeysForm extends React.Component<
     );
   }
 }
-
-// //
-//   match?: FKMatch;
-//   defferrable: boolean;
-//   deferred: boolean;
-//   comment?: string;
