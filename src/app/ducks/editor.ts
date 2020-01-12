@@ -1,7 +1,9 @@
 import { hen, Hen } from "app/util/createReducer";
+import { downloadFile } from "app/util";
 import { createSelector } from "reselect";
 import * as DB from "app/models/pg";
 import { RootState } from "app/reducers";
+import { tableToSql } from "app/lib/sqlizer/psql";
 
 type TableMap = { [k: string]: DB.Table };
 enum AlertStatus {
@@ -92,5 +94,16 @@ export function updateTable(t: DB.Table) {
     }
 
     dispatch(actions.updateTable(t.name, t));
+  };
+}
+
+export function exportSQL() {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const { tables } = getTables(state);
+
+    downloadFile("export.sql", "application/sql", [
+      tables.map((t) => tableToSql(t)).join("\r\n"),
+    ]);
   };
 }

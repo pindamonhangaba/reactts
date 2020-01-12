@@ -40,6 +40,7 @@ export type ForeignKey = {
   tableRef: string;
   columnsRef: Array<string>;
   onDelete?: FKActions;
+  onUpdate?: FKActions;
   match?: FKMatch;
   deferrable: boolean;
   deferred: boolean;
