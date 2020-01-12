@@ -147,7 +147,7 @@ function mapToDBTable(state: any) {
       columnsRef: [ref.columnsRef],
       onDelete: ref.onDelete,
       match: ref?.metadata?.match?.value,
-      defferrable: ref?.metadata?.defferable ?? false,
+      deferrable: ref?.metadata?.deferrable ?? false,
       deferred: ref?.metadata?.deferred ?? false,
       comment: ref?.metadata?.comment,
     })),
@@ -187,7 +187,7 @@ function mapFromDBTable(t: DB.Table) {
 
     v.fkData.metadata[i] = {
       match: { label: ref.match, value: ref.match },
-      defferrable: ref.defferable ?? false,
+      deferrable: ref.deferrable ?? false,
       deferred: ref.deferred ?? false,
       comment: ref.comment,
     };

@@ -33,7 +33,7 @@ const initialState: InitialState = {
           columns: ["addr_id"],
           tableRef: "address",
           columnsRef: ["addr_id"],
-          defferrable: false,
+          deferrable: false,
           deferred: false,
         },
       ],

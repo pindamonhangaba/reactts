@@ -16,7 +16,7 @@ export type Unique = {
   name: string;
   columns: Array<string>;
   tablespace?: string;
-  defferrable: boolean;
+  deferrable: boolean;
   deferred: boolean;
   comment?: string;
 };
@@ -41,7 +41,7 @@ export type ForeignKey = {
   columnsRef: Array<string>;
   onDelete?: FKActions;
   match?: FKMatch;
-  defferrable: boolean;
+  deferrable: boolean;
   deferred: boolean;
   comment?: string;
 };

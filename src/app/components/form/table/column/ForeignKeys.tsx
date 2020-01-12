@@ -188,17 +188,17 @@ export default class ForeignKeysForm extends React.Component<
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <label htmlFor="defferrable">Defferrable</label>
+          <label htmlFor="deferrable">deferrable</label>
           <input
-            id="defferrable"
+            id="deferrable"
             type="checkbox"
-            value="defferrable"
+            value="deferrable"
             checked={
-              (this.state.metadata[currentFocus[1]] || { defferrable: "" })
-                .defferrable
+              (this.state.metadata[currentFocus[1]] || { deferrable: "" })
+                .deferrable
             }
             onChange={(e) =>
-              this.handleMetaChange("defferrable", !!e.target.checked)
+              this.handleMetaChange("deferrable", !!e.target.checked)
             }
           />
         </div>
