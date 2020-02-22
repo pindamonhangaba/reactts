@@ -80,6 +80,9 @@ class EditorReactions extends Hen<InitialState> {
   updateTable(tName: string, t: DB.Table) {
     this.state.tables[tName] = t;
   }
+  projectImported(t: TableMap) {
+    this.state.tables = t;
+  }
 }
 
 export const [menuReducer, actions] = hen(new EditorReactions(initialState));
@@ -105,5 +108,29 @@ export function exportSQL() {
     downloadFile("export.sql", "application/sql", [
       tables.map((t) => tableToSql(t)).join("\r\n"),
     ]);
+  };
+}
+
+export function exportProject() {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const { tables } = getTables(state);
+    const projectExportShape = {
+      tables,
+      version: "v1",
+    };
+
+    downloadFile("export.tabua", "application/json", [
+      JSON.stringify(projectExportShape),
+    ]);
+  };
+}
+
+export function importProject(file: string) {
+  return (dispatch, getState: () => RootState) => {
+    try {
+      const j: { tables: TableMap } = JSON.parse(file);
+      dispatch(actions.projectImported(j.tables));
+    } catch (e) {}
   };
 }

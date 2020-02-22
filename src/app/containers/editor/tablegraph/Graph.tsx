@@ -11,6 +11,8 @@ export interface SidebarProps {
   tables: Array<DB.Table>;
 }
 
+// todo: add aria labels to svg tables
+// https://developer.paciellogroup.com/blog/2013/12/using-aria-enhance-svg-accessibility/
 export class Graph extends React.Component<SidebarProps, {}> {
   public render() {
     const { tables } = this.props;
