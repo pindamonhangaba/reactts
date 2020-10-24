@@ -2,20 +2,22 @@ import React from "react";
 import { connect } from "react-redux";
 
 import * as DB from "app/models/pg";
-import { getTables } from "app/ducks/editor";
+import { getTables, actions, Position, TablePosMap } from "app/ducks/editor";
 
 import GraphComponent from "app/components/tablegraph/Graph";
 import { Relation } from "app/components/tablegraph/Table";
 
 export interface SidebarProps {
   tables: Array<DB.Table>;
+  tablePositions: TablePosMap;
+  updateTablePos: (t: string, p: Position) => void;
 }
 
 // todo: add aria labels to svg tables
 // https://developer.paciellogroup.com/blog/2013/12/using-aria-enhance-svg-accessibility/
 export class Graph extends React.Component<SidebarProps, {}> {
   public render() {
-    const { tables } = this.props;
+    const { tables, tablePositions, updateTablePos } = this.props;
 
     const gtables = tables.map((t: DB.Table, i: number) => ({
       title: t.name,
@@ -24,8 +26,8 @@ export class Graph extends React.Component<SidebarProps, {}> {
         type: col.type,
         primary: !!col.primary,
       })),
-      initialX: i * 100,
-      initialY: i * 100,
+      initialX: tablePositions?.[t.name]?.x ?? i * 100,
+      initialY: tablePositions?.[t.name]?.y ?? i * 100,
       refs: (t.references || []).map((e) => ({
         name: e.name,
         relationLabels: ["*", "*"] as [string, string],
@@ -58,11 +60,21 @@ export class Graph extends React.Component<SidebarProps, {}> {
       })),
     }));
 
-    return <GraphComponent tables={gtables} />;
+    return (
+      <GraphComponent
+        tables={gtables}
+        onPositionChange={(p) =>
+          Object.keys(p).forEach((k) => updateTablePos(k, p[k]))
+        }
+      />
+    );
   }
 }
 
-export default connect(getTables)(Graph);
+export default connect(getTables, (dispatch) => ({
+  updateTablePos: (t: string, p: Position) =>
+    dispatch(actions.updateTablePos(t, p)),
+}))(Graph);
 
 enum ColTypes {
   Self = "columns",

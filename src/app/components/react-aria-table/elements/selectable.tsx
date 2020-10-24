@@ -28,7 +28,7 @@ export interface EditableState {
   value: any;
 }
 
-export type KV = { value: string; label: string }
+export type KV = { value: string; label: string };
 
 class Editable extends React.Component<EditableProps, EditableState> {
   ref = React.createRef();
@@ -83,7 +83,10 @@ class Editable extends React.Component<EditableProps, EditableState> {
     this.setState({ editing: false }, this.focus);
     if (this.state.editing) {
       // accept changes
-      const val = 'value' in this.state.value ? this.state.value.value : this.state.value.map(e => e.value);
+      const val =
+        "value" in this.state.value
+          ? this.state.value.value
+          : this.state.value.map((e) => e.value);
       this.props.onChangeAccept?.(val);
     }
   };
@@ -93,11 +96,10 @@ class Editable extends React.Component<EditableProps, EditableState> {
       this.focus
     );
   };
-  handleSelectChange = (v: KV| Array<KV>)  => {
-    const val = 'value' in v ? v.value : v.map(e => e.value);
+  handleSelectChange = (v: KV | Array<KV>) => {
+    const val = "value" in v ? v.value : v.map((e) => e.value);
 
     this.props.onChangeAccept?.(val);
-    console.log('--> changed', v, val);
     this.setState({ value: v });
   };
 
@@ -105,7 +107,6 @@ class Editable extends React.Component<EditableProps, EditableState> {
     const { colKey, row, focused, options, multiple } = this.props;
     const { value, editing } = this.state;
     let contents = row[colKey];
-    console.log('-->', editing, value, contents);
     if (this.state.editing) {
       contents = (
         <CreatableSelect
@@ -123,7 +124,7 @@ class Editable extends React.Component<EditableProps, EditableState> {
           isMulti={multiple}
           closeMenuOnSelect={false}
           components={{
-            ClearIndicator: null
+            ClearIndicator: null,
           }}
         />
       );

@@ -6,6 +6,7 @@ import {
   exportSQL,
   exportProject,
   importProject,
+  autoLayout,
 } from "app/ducks/editor";
 import * as DB from "app/models/pg";
 import TableEditorPopup from "app/containers/editor/popup/TableEditor";
@@ -16,6 +17,7 @@ export interface SidebarProps {
   exportSQL: () => void;
   exportProject: () => void;
   importProject: (t: string) => void;
+  autoLayout: () => void;
 }
 
 export class Editor extends React.Component<SidebarProps, {}> {
@@ -37,9 +39,25 @@ export class Editor extends React.Component<SidebarProps, {}> {
     this.props.importProject(t);
   };
 
+  handleAutoLayout = () => {
+    this.props.autoLayout();
+  };
+
   render() {
     return (
       <div style={{ height: 40, background: "#ccc", display: "flex" }}>
+        <button
+          style={{
+            margin: 1,
+            fontSize: 12,
+            height: 40,
+            display: "flex",
+            alignItems: "center",
+          }}
+          onClick={this.handleAutoLayout}
+        >
+          Auto layout
+        </button>
         <button
           style={{
             margin: 1,
@@ -119,5 +137,6 @@ export default connect(
     exportSQL: () => dispatch(exportSQL() as any),
     exportProject: () => dispatch(exportProject() as any),
     importProject: (file: string) => dispatch(importProject(file) as any),
+    autoLayout: () => dispatch(autoLayout() as any),
   })
 )(Editor);

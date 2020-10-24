@@ -8,7 +8,11 @@ import Grid from "./BackgroundGrid";
 const HEIGHT = 32;
 
 export default class Canvas extends PureComponent<
-  { tables: Array<Table>; zoom?: number },
+  {
+    tables: Array<Table>;
+    zoom?: number;
+    onPositionsChange?: (p: { [k: string]: Position }) => void;
+  },
   {
     tableOrder: { [k: string]: number };
     tablePositions: { [k: string]: Position };
@@ -79,6 +83,10 @@ export default class Canvas extends PureComponent<
         [t.title]: p,
       },
     }));
+  };
+
+  handleLastPositionChange = (p: Position, t: Table) => {
+    this.props.onPositionsChange?.({ [t.title]: p });
   };
 
   handleBeforePositionChange = (p: Position, t: Table) => {
@@ -196,7 +204,7 @@ export default class Canvas extends PureComponent<
         ))}
         {orderedTables.map((t) => (
           <TableRender
-            key={t.title}
+            key={t.title + t.initialX + t.initialY}
             title={t.title}
             refs={t.refs}
             rows={t.rows}
@@ -204,6 +212,7 @@ export default class Canvas extends PureComponent<
             initialY={t.initialY}
             beforePositionChange={this.handleBeforePositionChange}
             onPositionChange={this.handlePositionChange}
+            onLastPositionChange={this.handleLastPositionChange}
             onHover={this.handleHover}
             highlight={highlightedTables.indexOf(t.title) > -1}
           />

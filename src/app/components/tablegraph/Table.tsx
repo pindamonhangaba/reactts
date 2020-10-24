@@ -72,6 +72,7 @@ export interface Position {
 
 export interface TableProps extends Table {
   onPositionChange?: (pos: Position, t: Table) => void;
+  onLastPositionChange?: (pos: Position, t: Table) => void;
   beforePositionChange?: (pos: Position, t: Table) => void;
   onHover?: (hover: boolean, t: Table) => void;
   highlight?: boolean;
@@ -79,7 +80,13 @@ export interface TableProps extends Table {
 
 export default class TableRender extends PureComponent<
   TableProps,
-  { x: number; y: number; height: number; width: number; hover: boolean }
+  {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    hover: boolean;
+  }
 > {
   state = {
     x: this.props.initialX,
@@ -116,6 +123,7 @@ export default class TableRender extends PureComponent<
     const {
       onPositionChange,
       beforePositionChange,
+      onLastPositionChange,
       onHover,
       highlight,
       ...table
@@ -123,6 +131,27 @@ export default class TableRender extends PureComponent<
 
     onPositionChange &&
       onPositionChange(
+        {
+          ...this.state,
+          x1: this.state.width + this.state.x,
+          y1: this.state.height + this.state.y,
+        },
+        table
+      );
+  };
+
+  positionChangedLast = () => {
+    const {
+      onPositionChange,
+      beforePositionChange,
+      onLastPositionChange,
+      onHover,
+      highlight,
+      ...table
+    } = this.props;
+
+    onLastPositionChange &&
+      onLastPositionChange(
         {
           ...this.state,
           x1: this.state.width + this.state.x,
@@ -191,7 +220,8 @@ export default class TableRender extends PureComponent<
     if (
       e.clientY <= 0 ||
       e.clientX <= 0 ||
-      (e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)
+      e.clientX >= window.innerWidth ||
+      e.clientY >= window.innerHeight
     ) {
       this.handleMouseUp(e);
     }
@@ -205,6 +235,7 @@ export default class TableRender extends PureComponent<
       this.handleCheckMouseLeaveDocument
     );
     this.coords = { x: 0, y: 0 };
+    this.positionChangedLast();
   };
 
   handleMouseMove = (e: any) => {
@@ -230,19 +261,16 @@ export default class TableRender extends PureComponent<
 
     const h = highlight || hover;
 
-    const fks = refs.reduce(
-      (a, b) => {
-        let rows: Array<number> = [];
-        if (b.relations[0].table === title) {
-          rows = [...rows, ...b.relations[0].rows];
-        }
-        if (b.relations[1].table === title) {
-          rows = [...rows, ...b.relations[1].rows];
-        }
-        return rows;
-      },
-      [] as Array<number>
-    );
+    const fks = refs.reduce((a, b) => {
+      let rows: Array<number> = [];
+      if (b.relations[0].table === title) {
+        rows = [...rows, ...b.relations[0].rows];
+      }
+      if (b.relations[1].table === title) {
+        rows = [...rows, ...b.relations[1].rows];
+      }
+      return rows;
+    }, [] as Array<number>);
 
     return (
       <svg

@@ -1,11 +1,12 @@
 import React, { PureComponent, ChangeEvent } from "react";
 
-import { Table } from "./Table";
+import { Table, Position } from "./Table";
 import Canvas from "./Canvas";
 import "./style.css";
 
 export interface GraphProps {
   tables: Array<Table>;
+  onPositionChange?: (p: { [k: string]: Position }) => void;
 }
 
 export default class Graph extends PureComponent<GraphProps> {
@@ -25,7 +26,11 @@ export default class Graph extends PureComponent<GraphProps> {
       >
         <div style={{ background: "#f3f3f3" }}>
           <svg height="calc(100vh - 200px)" width="100%">
-            <Canvas zoom={this.state.zoom} tables={tables} />
+            <Canvas
+              zoom={this.state.zoom}
+              tables={tables}
+              onPositionsChange={this.props.onPositionChange}
+            />
           </svg>
         </div>
         <div
