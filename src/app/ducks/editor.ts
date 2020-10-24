@@ -95,8 +95,10 @@ class EditorReactions extends Hen<InitialState> {
   updateTable(tName: string, t: DB.Table) {
     this.state.tables[tName] = t;
   }
-  projectImported(t: TableMap) {
-    this.state.tables = t;
+  projectImported(t: Array<DB.Table>) {
+    t.forEach((tb) => {
+      this.state.tables[tb.name] = tb;
+    });
   }
   updateTablePos(tName: string, t: Position) {
     this.state.tablePositions[tName] = t;
@@ -150,7 +152,7 @@ export function exportProject() {
 export function importProject(file: string) {
   return (dispatch, getState: () => RootState) => {
     try {
-      const j: { tables: TableMap } = JSON.parse(file);
+      const j: { tables: Array<DB.Table> } = JSON.parse(file);
       dispatch(actions.projectImported(j.tables));
     } catch (e) {}
   };
@@ -173,10 +175,11 @@ export function autoLayout() {
 
     Object.keys(tables).forEach((tName) => {
       const pos = tablePositions[tName];
+      console.log("--> new node", tName, pos);
       g.setNode(tName, {
         label: tName,
-        width: pos.width ?? 200,
-        height: pos.height ?? 50,
+        width: pos?.width ?? 200,
+        height: pos?.height ?? 50,
       });
     });
 
@@ -192,6 +195,7 @@ export function autoLayout() {
     let updateTablePositions = { ...tablePositions };
     g.nodes().forEach(function(tName: string) {
       const layout = g.node(tName);
+      console.log("-->", tName, g);
       updateTablePositions[tName] = {
         ...updateTablePositions[tName],
         x: layout.x,
