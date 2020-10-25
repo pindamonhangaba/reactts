@@ -58,7 +58,7 @@ module.exports = {
                     {
                       loader: 'css-loader',
                       query: {
-                        modules: true,
+                        //modules: true,
                         sourceMap: !isProduction,
                         exportOnlyLocals :false,
                         importLoaders: 1,
