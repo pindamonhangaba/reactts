@@ -107,7 +107,7 @@ class Editable extends React.Component<EditableProps, EditableState> {
     const { colKey, row, focused, options, multiple } = this.props;
     const { value, editing } = this.state;
     let contents = row[colKey];
-    if (this.state.editing) {
+    if (editing) {
       contents = (
         <CreatableSelect
           ref={this.inputRef as any}
@@ -119,7 +119,7 @@ class Editable extends React.Component<EditableProps, EditableState> {
           onChange={this.handleSelectChange}
           formatCreateLabel={() => null}
           placeholder="..."
-          tabIndex={focused && this.state.editing ? 0 : -1}
+          tabIndex={focused && editing ? 0 : -1}
           styles={colourStyles}
           isMulti={multiple}
           closeMenuOnSelect={false}
