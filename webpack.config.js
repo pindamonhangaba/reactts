@@ -10,7 +10,7 @@ var outPath = path.join(__dirname, './dist');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
-var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
     mode: (isProduction && 'production') || 'development',
@@ -55,15 +55,16 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [!isProduction ? 'style-loader' : MiniCssExtractPlugin.loader,
-                    /*{
+                    {
                       loader: 'css-loader',
                       query: {
                         modules: true,
                         sourceMap: !isProduction,
+                        exportOnlyLocals :false,
                         importLoaders: 1,
                         localIdentName: '[local]__[hash:base64:5]',
                       },
-                    },*/
+                    },
                     {
                         loader: 'postcss-loader',
                         options: {
@@ -90,12 +91,10 @@ module.exports = {
     optimization: {
         minimize: !!isProduction,
         minimizer: [
-            new UglifyJSPlugin({
-                exclude: /node_modules/,
-                uglifyOptions: {
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
                     ecma: 5,
-                    //mangle: false,
-                    keep_fnames: true,
                 },
             }),
         ],
@@ -118,9 +117,9 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin({
             APPVERSION: "v1",
-            __API_PATH__: 'https://app.doc-empresa.com.br:8089/api',
-            __AUTH_PATH__: 'https://app.doc-empresa.com.br:8089',
-            __WS_PATH__: 'ws://app.doc-empresa.com.br:8089/connect',
+            __API_PATH__: 'https://example.com:8089/api',
+            __AUTH_PATH__: 'https://example.com:8089',
+            __WS_PATH__: 'ws://example.com:8089/connect',
             NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
             DEBUG: false,
         }),
