@@ -4,6 +4,7 @@
     "private": true,
     "description": "React, Redux, Reselect, Typescript boilerplate",
     "main": "index.js",
+    "homepage": "pindamonhangaba.github.io/reactts/",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "webpack-dev-server --mode development --hot --progress --color --port 3000 --host 0.0.0.0 ",
