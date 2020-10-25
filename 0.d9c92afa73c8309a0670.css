@@ -10,7 +10,7 @@ body {
 /* Chart */
 
 
-#chart__3zRzw {
+#chart {
     background-color: #fbfbfb;
     height: 100%;
     width: 100%;
@@ -18,24 +18,24 @@ body {
 }
 
 
-.ref__3QkNV {
+.ref {
     fill: none;
 }
 
 
-.visible-path__2KWoL {
+.visible-path {
     stroke: #d3d3d3;
     stroke-width: 1;
 }
 
 
-.hidden-path__1-92X {
+.hidden-path {
     stroke-width: 3;
     stroke: rgba(0, 0, 0, 0);
 }
 
 
-.no-select__23DU8 {
+.no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     mozuserselect: none;
@@ -45,92 +45,92 @@ body {
 }
 
 
-.table-header__ies-N {
+.table-header {
     fill: #316896;
     cursor: -webkit-grab;
     cursor: grab;
 }
 
 
-.table-header__ies-N:active {
+.table-header:active {
     cursor: -webkit-grabbing;
     cursor: grabbing;
 }
 
 
-.table-header__ies-N text {
+.table-header text {
     fill: white;
     font-weight: bold;
 }
 
 
-.field__3wFlq rect {
+.field rect {
     fill: #f6f6f6;
 }
 
 
-.field-name__3JbIC {
+.field-name {
     fill: #6f6f6f;
     font-size: 12px;
 }
 
 
-.field-type__2auxT {
+.field-type {
     font-size: 12px;
     fill: #999999 !important;
     text-anchor: end;
 }
 
 
-.primary-key__2rb54 .field-type__2auxT {
+.primary-key .field-type {
     font-weight: 700;
 }
 
 
-.primary-key__2rb54 .field-name__3JbIC {
+.primary-key .field-name {
     font-weight: 700;
     fill: #000000;
 }
 
 
-.highlight-ref__22qdt .visible-path__2KWoL {
+.highlight-ref .visible-path {
     stroke: #619bcc;
     stroke-width: 3;
 }
 
 
-.highlight-field__orbKi rect {
+.highlight-field rect {
     fill: #deecf3;
 }
 
 
-.endpoint__2SumS {
+.endpoint {
     fill: black;
     font-size: 10px;
     text-anchor: middle;
 }
 
 
-.hidden__CpMjb {
+.hidden {
     display: none;
 }
 
 
-.temp-ref__1hYqK path {
+.temp-ref path {
     stroke-width: 1;
     stroke: darkblue;
     stroke-dasharray: 4 2;
-    animation: dash__W_gvM 10s linear 0s infinite reverse;
+    animation: dash 10s linear 0s infinite reverse;
 }
 
 
-.temp-ref-invalid__303AS {
+.temp-ref-invalid {
     cursor: not-allowed;
 }
 
 
-.temp-ref-src__3J5Ho rect,
-.temp-ref-dest__1iafr rect {
+.temp-ref-src rect,
+.temp-ref-dest rect {
     fill: LightSkyBlue;
 }
 td {
@@ -138,6 +138,6 @@ td {
 }
 
 td:focus,
-td.active__2-xXx {
+td.active {
     background-color: aquamarine;
 }
